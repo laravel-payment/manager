@@ -1,5 +1,5 @@
 {
-    "name": "mxp100/laravel-payment",
+    "name": "laravel-payment/manager",
     "description": "Laravel payment system",
     "type": "laravel-plugin",
     "license": "MIT",
@@ -19,22 +19,22 @@
     },
     "autoload": {
         "psr-4": {
-            "Mxp100\\LaravelPayment\\": "src/"
+            "LaravelPayment\\Manager\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Mxp100\\LaravelPayment\\Tests\\": "tests/"
+            "LaravelPayment\\Manager\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Mxp100\\LaravelPayment\\ServiceProvider"
+                "LaravelPayment\\Manager\\ServiceProvider"
             ],
             "aliases": {
-                "Payment": "Mxp100\\LaravelPayment\\Facades\\Payment",
-                "Payout": "Mxp100\\LaravelPayment\\Facades\\Payout"
+                "Payment": "LaravelPayment\\Manager\\Facades\\Payment",
+                "Payout": "LaravelPayment\\Manager\\Facades\\Payout"
             }
         }
     }

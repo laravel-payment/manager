@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Mxp100\LaravelPayment;
+namespace LaravelPayment\Manager;
 
 
 use Illuminate\Support\Manager;

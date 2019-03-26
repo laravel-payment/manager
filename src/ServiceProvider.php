@@ -1,6 +1,6 @@
 <?php
 
-namespace Mxp100\LaravelPayment;
+namespace LaravelPayment\Manager;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {

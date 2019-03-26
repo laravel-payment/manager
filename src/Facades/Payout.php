@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Mxp100\LaravelPayment\Facades;
+namespace LaravelPayment\Manager\Facades;
 
 
 use Illuminate\Support\Facades\Facade;
-use Mxp100\LaravelPayment\Contracts\Payout\Factory;
+use LaravelPayment\Manager\Contracts\Payout\Factory;
 
 class Payout extends Facade
 {

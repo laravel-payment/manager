@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Mxp100\LaravelPayment\Contracts\Payout;
+namespace LaravelPayment\Manager\Contracts\Payout;
 
 
 interface Provider

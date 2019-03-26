@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Mxp100\LaravelPayment\Contracts\Payment;
+namespace LaravelPayment\Manager\Contracts\Payment;
 
 
 interface Factory

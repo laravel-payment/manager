@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Mxp100\LaravelPayment\Events;
+namespace LaravelPayment\Manager\Events;
 
 use Illuminate\Contracts\Container\Container as Application;
 
