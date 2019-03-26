@@ -2,11 +2,18 @@
 
 namespace LaravelPayment\Manager;
 
+use LaravelPayment\Manager\Events\PaymentBooted;
+use LaravelPayment\Manager\Events\PayoutBooted;
+
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     public function boot()
     {
+        $paymentBooted = app(PaymentBooted::class);
+        $payoutBooted = app(PayoutBooted::class);
 
+        event($paymentBooted);
+        event($payoutBooted);
     }
 
     /**
