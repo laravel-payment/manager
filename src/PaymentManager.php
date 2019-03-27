@@ -8,11 +8,6 @@ use Illuminate\Support\Manager;
 
 class PaymentManager extends Manager implements Contracts\Payment\Factory
 {
-
-    public function with($driver){
-        return $this->driver($driver);
-    }
-
     /**
      * Get the default driver name.
      *

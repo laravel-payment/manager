@@ -2,18 +2,19 @@
 
 namespace LaravelPayment\Manager;
 
-use LaravelPayment\Manager\Events\PaymentBooted;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use LaravelPayment\Manager\Events\PaymentServiceBooted;
 use LaravelPayment\Manager\Events\PayoutBooted;
 
-class ServiceProvider extends \Illuminate\Support\ServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
+
+    protected $defer = true;
+
     public function boot()
     {
-        $paymentBooted = app(PaymentBooted::class);
-        $payoutBooted = app(PayoutBooted::class);
-
-        event($paymentBooted);
-        event($payoutBooted);
+        $paymentServiceBooted = app(PaymentServiceBooted::class);
+        event($paymentServiceBooted);
     }
 
     /**
@@ -31,6 +32,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             return new PayoutManager($app);
         });
     }
+
 
     /**
      * Get the services provided by the provider.
