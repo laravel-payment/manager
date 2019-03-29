@@ -1,16 +1,16 @@
 <?php
 
 
-namespace LaravelPayment\Manager\Contracts\Payment;
+namespace LaravelPayment\Manager\Payment;
 
 
-interface Factory
+interface FactoryContract
 {
     /**
      * Get an OAuth provider implementation.
      *
      * @param  string  $driver
-     * @return Provider
+     * @return ProviderContract
      */
     public function driver($driver = null);
 }

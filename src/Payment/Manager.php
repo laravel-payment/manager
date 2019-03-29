@@ -1,12 +1,12 @@
 <?php
 
 
-namespace LaravelPayment\Manager;
+namespace LaravelPayment\Manager\Payment;
 
 
-use Illuminate\Support\Manager;
+use Illuminate\Support\Manager as BaseManager;
 
-class PaymentManager extends Manager implements Contracts\Payment\Factory
+class Manager extends BaseManager implements FactoryContract
 {
     /**
      * Get the default driver name.

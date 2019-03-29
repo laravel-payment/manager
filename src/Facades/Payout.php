@@ -5,7 +5,7 @@ namespace LaravelPayment\Manager\Facades;
 
 
 use Illuminate\Support\Facades\Facade;
-use LaravelPayment\Manager\Contracts\Payout\Factory;
+use LaravelPayment\Manager\Payout\FactoryContract;
 
 class Payout extends Facade
 {
@@ -16,6 +16,6 @@ class Payout extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return Factory::class;
+        return FactoryContract::class;
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
 
-namespace LaravelPayment\Manager;
+namespace LaravelPayment\Manager\Payout;
 
 
-use Illuminate\Support\Manager;
+use Illuminate\Support\Manager as BaseManager;
 
-class PayoutManager extends Manager implements Contracts\Payout\Factory
+class Manager extends BaseManager implements FactoryContract
 {
 
     /**

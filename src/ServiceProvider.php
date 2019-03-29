@@ -2,9 +2,9 @@
 
 namespace LaravelPayment\Manager;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use LaravelPayment\Manager\Events\PaymentServiceBooted;
-use LaravelPayment\Manager\Events\PayoutBooted;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -13,8 +13,22 @@ class ServiceProvider extends BaseServiceProvider
 
     public function boot()
     {
+        if ($this->app->runningInConsole()) {
+            $this->registerPublish();
+        }
+
         $paymentServiceBooted = app(PaymentServiceBooted::class);
+
         event($paymentServiceBooted);
+
+        $this->registerRoutes();
+    }
+
+    public function when()
+    {
+        return [
+            'bootstrapped: Illuminate\Foundation\Bootstrap\BootProviders'
+        ];
     }
 
     /**
@@ -24,15 +38,41 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(Contracts\Payment\Factory::class, function ($app) {
-            return new PaymentManager($app);
+        $this->app->singleton(Payment\FactoryContract::class, function ($app) {
+            return new Payment\Manager($app);
         });
 
-        $this->app->singleton(Contracts\Payout\Factory::class, function ($app) {
-            return new PayoutManager($app);
+        $this->app->singleton(Payout\FactoryContract::class, function ($app) {
+            return new Payout\Manager($app);
         });
+
+        $configPath = __DIR__ . '/../config/payment.php';
+        $this->mergeConfigFrom($configPath, 'payment');
     }
 
+    public function registerPublish()
+    {
+        $this->publishes([
+            __DIR__ . '/../config/payment.php' => config_path('payment.php'),
+        ]);
+    }
+
+    public function registerRoutes()
+    {
+        $routeConfig = $this->app['config']->get('payment.route') +
+            [
+                'namespace' => __NAMESPACE__ . '\\Controllers',
+            ];
+
+        $this->getRouter()->group($routeConfig, function ($router) {
+            /** @var Router $router */
+
+            $router->addRoute(['GET', 'POST'], '{provider}/callback', 'PaymentController@callback')->name('callback');
+            $router->get('{provider}', 'PaymentController@process')->name('process');
+
+
+        });
+    }
 
     /**
      * Get the services provided by the provider.
@@ -42,8 +82,19 @@ class ServiceProvider extends BaseServiceProvider
     public function provides()
     {
         return [
-            Contracts\Payment\Factory::class,
-            Contracts\Payout\Factory::class,
+            Payment\FactoryContract::class,
+            Payout\FactoryContract::class,
         ];
     }
+
+    /**
+     * Get router
+     *
+     * @return \Illuminate\Routing\Router
+     */
+    protected function getRouter()
+    {
+        return $this->app['router'];
+    }
+
 }
