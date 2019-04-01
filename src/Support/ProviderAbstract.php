@@ -2,6 +2,8 @@
 
 namespace LaravelPayment\Manager\Support;
 
+use LaravelPayment\Manager\Exceptions\ConfigException;
+
 abstract class ProviderAbstract
 {
 
@@ -10,7 +12,12 @@ abstract class ProviderAbstract
     /** @var RequestClient */
     protected $client;
 
-    abstract function __construct($config);
+    final public function __construct($config)
+    {
+        $this->config = $config;
+    }
+
+    abstract function boot();
 
     public function setConfig(array $config): self
     {
@@ -31,8 +38,10 @@ abstract class ProviderAbstract
 
     public function checkServiceConfig($serviceConfig, $requiredFields)
     {
-        dd(array_keys($serviceConfig), $requiredFields);
-        dd(array_intersect(array_keys($serviceConfig), $requiredFields));
+        $notFoundFields = array_diff($requiredFields, array_keys($serviceConfig));
+        if (!empty($notFoundFields)) {
+            throw new ConfigException('Invalid config. Not found fields: ' . implode($notFoundFields));
+        }
     }
 
 }

@@ -33,13 +33,15 @@ class PaymentServiceBooted
 
     public function extendService($providerName, $providerClass)
     {
+        $provider = $this
+            ->createProvider($providerClass, config('payment.services.' . $providerName))
+            ->setClient(new RequestClient());
 
+        $provider->boot();
 
-        $this->getManager($providerClass)
-            ->extend($providerName, function () use ($providerName, $providerClass) {
-                return $this
-                    ->createProvider($providerClass, config('payment.services.' . $providerName))
-                    ->setClient(new RequestClient());
+        $this->getManager($provider)
+            ->extend($providerName, function () use ($provider) {
+                return $provider;
             });
     }
 
