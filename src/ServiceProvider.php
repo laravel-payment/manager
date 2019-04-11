@@ -19,15 +19,17 @@ class ServiceProvider extends BaseServiceProvider
 
         $paymentServiceBooted = app(PaymentServiceBooted::class);
 
-        event($paymentServiceBooted);
-
         $this->registerRoutes();
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-payment');
+
+        event($paymentServiceBooted);
     }
 
     public function when()
     {
         return [
-            'bootstrapped: Illuminate\Foundation\Bootstrap\BootProviders'
+            'bootstrapped: Illuminate\Foundation\Bootstrap\BootProviders',
         ];
     }
 
@@ -48,30 +50,6 @@ class ServiceProvider extends BaseServiceProvider
 
         $configPath = __DIR__ . '/../config/payment.php';
         $this->mergeConfigFrom($configPath, 'payment');
-    }
-
-    public function registerPublish()
-    {
-        $this->publishes([
-            __DIR__ . '/../config/payment.php' => config_path('payment.php'),
-        ]);
-    }
-
-    public function registerRoutes()
-    {
-        $routeConfig = $this->app['config']->get('payment.route') +
-            [
-                'namespace' => __NAMESPACE__ . '\\Controllers',
-            ];
-
-        $this->getRouter()->group($routeConfig, function ($router) {
-            /** @var Router $router */
-
-            $router->addRoute(['GET', 'POST'], '{provider}/callback', 'PaymentController@callback')->name('callback');
-            $router->get('{provider}', 'PaymentController@process')->name('process');
-
-
-        });
     }
 
     /**
@@ -97,4 +75,39 @@ class ServiceProvider extends BaseServiceProvider
         return $this->app['router'];
     }
 
+    protected function registerPublish()
+    {
+        $this->publishes([
+            __DIR__ . '/../config/payment.php' => config_path('payment.php'),
+            __DIR__ . '/../resources/views'    => resource_path('views/vendor/laravel-payment'),
+        ]);
+    }
+
+    protected function registerRoutes()
+    {
+        $routeConfig = config('payment.route') +
+            [
+                'namespace' => __NAMESPACE__ . '\\Controllers',
+            ];
+
+
+        $this->getRouter()->group($routeConfig, function (&$router) {
+            /** @var Router $router */
+
+            $router->addRoute(['GET', 'POST'], '{provider}/callback', [
+                'uses' => 'PaymentController@callback',
+                'as'   => 'callback',
+            ]);
+
+            $router->get('{provider}/check', [
+                'uses' => 'PaymentController@check',
+                'as'   => 'check',
+            ]);
+
+            $router->get('{provider}', [
+                'uses' => 'PaymentController@process',
+                'as'   => 'process',
+            ]);
+        });
+    }
 }

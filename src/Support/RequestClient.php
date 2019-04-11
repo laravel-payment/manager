@@ -12,6 +12,9 @@ class RequestClient
     const DATA_TYPE_PLAIN = 'plain';
     const DATA_TYPE_XML = 'xml';
 
+    const METHOD_POST = 'post';
+    const METHOD_GET = 'get';
+
     protected $dataType = self::DATA_TYPE_JSON;
     protected $baseURL = null;
     protected $headers = [];
@@ -64,23 +67,37 @@ class RequestClient
     public function request($url, $method, $data)
     {
         if (!is_null($this->baseURL)) {
-            $url .= $this->baseURL . $url;
+            $url = $this->baseURL . $url;
         }
 
         if (!empty($this->globalData)) {
             $data += $this->globalData;
         }
 
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
+        $options = [
+            CURLOPT_URL            => $url,
             CURLOPT_VERBOSE        => false,
             CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => $data,
             CURLOPT_HTTPHEADER     => $this->headers,
-        ]);
+        ];
+
+        switch ($method) {
+            case self::METHOD_POST:
+                $options[CURLOPT_POST] = true;
+                $options[CURLOPT_POSTFIELDS] = $data;
+                break;
+            case self::METHOD_GET:
+                $options[CURLOPT_URL] .= '?' . http_build_query($data);
+                $options[CURLOPT_POST] = false;
+                break;
+            default:
+                throw new ClientException('unknown method');
+        }
+
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
 
         $response = curl_exec($ch);
 
@@ -91,7 +108,7 @@ class RequestClient
         return $this->parseResponse($response);
     }
 
-    protected function parseResponse($data): mixed
+    protected function parseResponse($data)
     {
         switch ($this->dataType) {
             case self::DATA_TYPE_JSON:

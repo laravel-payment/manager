@@ -7,17 +7,28 @@ use LaravelPayment\Manager\Exceptions\ConfigException;
 abstract class ProviderAbstract
 {
 
+    protected $name;
+
     protected $config = [];
+
+    protected $testMode = false;
 
     /** @var RequestClient */
     protected $client;
 
-    final public function __construct($config)
+    final public function __construct($providerName, $config)
     {
+        $this->name = $providerName;
         $this->config = $config;
+        $this->testMode = !empty($config['test_mode']);
     }
 
     abstract function boot();
+
+    public function getName()
+    {
+        return $this->name;
+    }
 
     public function setConfig(array $config): self
     {

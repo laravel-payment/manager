@@ -7,7 +7,7 @@ namespace LaravelPayment\Manager\Payout;
 interface FactoryContract
 {
     /**
-     * Get an OAuth provider implementation.
+     * Get an payout provider implementation.
      *
      * @param  string  $driver
      * @return ProviderContract

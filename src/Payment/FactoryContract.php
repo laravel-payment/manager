@@ -7,10 +7,10 @@ namespace LaravelPayment\Manager\Payment;
 interface FactoryContract
 {
     /**
-     * Get an OAuth provider implementation.
+     * Get an payment provider implementation.
      *
      * @param  string  $driver
-     * @return ProviderContract
+     * @return ProviderAbstract
      */
     public function driver($driver = null);
 }

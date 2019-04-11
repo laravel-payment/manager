@@ -7,8 +7,8 @@ use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Foundation\Events\Dispatchable;
 use LaravelPayment\Manager\Payment\FactoryContract as PaymentFactory;
 use LaravelPayment\Manager\Payout\FactoryContract as PayoutFactory;
-use LaravelPayment\Manager\Payment\ProviderContract as PaymentProviderContract;
-use LaravelPayment\Manager\Payout\ProviderContract as PayoutProviderContract;
+use LaravelPayment\Manager\Payment\ProviderAbstract as PaymentProviderAbstract;
+use LaravelPayment\Manager\Payout\ProviderAbstract as PayoutProviderAbstract;
 use LaravelPayment\Manager\Exceptions\InvalidArgumentException;
 use LaravelPayment\Manager\Exceptions\InvalidProviderException;
 use LaravelPayment\Manager\Payment\Manager as PaymentManager;
@@ -34,7 +34,7 @@ class PaymentServiceBooted
     public function extendService($providerName, $providerClass)
     {
         $provider = $this
-            ->createProvider($providerClass, config('payment.services.' . $providerName))
+            ->createProvider($providerName, $providerClass)
             ->setClient(new RequestClient());
 
         $provider->boot();
@@ -46,16 +46,18 @@ class PaymentServiceBooted
     }
 
     /**
+     * @param string $providerName
      * @param string $providerClass
+     *
      * @return ProviderAbstract
      */
-    private function createProvider($providerClass, $config): ProviderAbstract
+    private function createProvider($providerName, $providerClass): ProviderAbstract
     {
         if (!class_exists($providerClass)) {
             throw new InvalidArgumentException($providerClass . ' not exist');
         }
 
-        return new $providerClass($config);
+        return new $providerClass($providerName, config('payment.services.' . $providerName));
     }
 
     /**
@@ -67,11 +69,11 @@ class PaymentServiceBooted
      */
     private function getManager($provider)
     {
-        if ($provider instanceof PaymentProviderContract) {
+        if ($provider instanceof PaymentProviderAbstract) {
             return $this->app->make(PaymentFactory::class);
         }
 
-        if ($provider instanceof PayoutProviderContract) {
+        if ($provider instanceof PayoutProviderAbstract) {
             return $this->app->make(PayoutFactory::class);
         }
 
