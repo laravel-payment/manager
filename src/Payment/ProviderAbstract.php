@@ -3,6 +3,7 @@
 
 namespace LaravelPayment\Manager\Payment;
 
+use LaravelPayment\Manager\Payment\Results\CallbackResult;
 use LaravelPayment\Manager\Payment\Results\ProcessResult;
 use LaravelPayment\Manager\Payment\Results\StatusResult;
 use LaravelPayment\Manager\Support\ProviderAbstract as BaseProviderAbstract;
@@ -22,6 +23,8 @@ abstract class ProviderAbstract extends BaseProviderAbstract
      * @return ProcessResult
      */
     abstract public function process($orderNumber, $currency, $amount): ProcessResult;
+
+    abstract public function callback($data): CallbackResult;
 
     abstract public function status($data): StatusResult;
 
